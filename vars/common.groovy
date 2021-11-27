@@ -37,8 +37,8 @@ import groovy.transform.Field
     'cc' : 'cc'
 ]
 
-@Field docker_repo_name = 'jenkins-mbedtls'
-@Field docker_ecr = "666618195821.dkr.ecr.eu-west-1.amazonaws.com"
+@Field docker_repo_name = 'ci-amd64-mbed-tls-ubuntu'
+@Field docker_ecr = "trustedfirmware"
 @Field docker_repo = "$docker_ecr/$docker_repo_name"
 
 @Field linux_platforms = ["ubuntu-16.04", "ubuntu-18.04"]
@@ -101,7 +101,6 @@ def get_docker_image(platform) {
     for (int attempt = 1; attempt <= 3; attempt++) {
         try {
             sh """\
-aws ecr get-login-password | docker login --username AWS --password-stdin $docker_ecr
 docker pull $docker_repo:$docker_image
 """
             break
