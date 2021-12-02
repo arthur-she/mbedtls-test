@@ -65,7 +65,7 @@ import groovy.transform.Field
 
 /* Maps platform names to the tag of the docker image used to test that platform.
  * Populated by init_docker_images() / gen_jobs.gen_dockerfile_builder_job(platform). */
-@Field static docker_tags = [:]
+@Field static docker_tags = [('ubuntu-16.04'):'xenial', ('ubuntu-18.04'):'bionic']
 
 /* Compute the git object ID of the Dockerfile.
 * Equivalent to the `git hash-object <file>` command. */
