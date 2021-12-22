@@ -58,7 +58,7 @@ def gen_docker_jobs_foreach(label, platforms, compilers, script) {
             def job_name = "${label}-${compiler}-${platform}"
             def shell_script = sprintf(script, common.compiler_paths[compiler])
             jobs[job_name] = {
-                node('container-host') {
+                node('build-amd64') {
                     try {
                         deleteDir()
                         common.get_docker_image(platform)
@@ -132,7 +132,7 @@ export PYTHON=/usr/local/bin/python2.7
 
 def node_label_for_platform(platform) {
     switch (platform) {
-    case ~/^(debian|ubuntu)(-.*)?/: return 'container-host';
+    case ~/^(debian|ubuntu)(-.*)?/: return 'build-amd64';
     case ~/^freebsd(-.*)?/: return 'freebsd';
     case ~/^windows(-.*)?/: return 'windows';
     default: return platform;
@@ -324,7 +324,7 @@ def gen_abi_api_checking_job(platform) {
     def job_name = "ABI-API-checking"
 
     jobs[job_name] = {
-        node('container-host') {
+        node('build-amd64') {
             try {
                 deleteDir()
                 common.get_docker_image(platform)
@@ -366,7 +366,7 @@ def gen_code_coverage_job(platform) {
     def job_name = 'code-coverage'
 
     jobs[job_name] = {
-        node('container-host') {
+        node('build-amd64') {
             try {
                 deleteDir()
                 common.get_docker_image(platform)

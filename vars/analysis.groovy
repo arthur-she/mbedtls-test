@@ -40,7 +40,7 @@ def gather_outcomes() {
     if (outcome_stashes.isEmpty()) {
         return
     }
-    node('helper-container-host') {
+    node('build-amd64') {
         dir('outcomes') {
             deleteDir()
             try {

@@ -121,7 +121,7 @@ docker run -u \$(id -u):\$(id -g) --rm --entrypoint $entrypoint \
 
 /* Get components of all.sh for a list of platforms*/
 def get_all_sh_components(platform_list) {
-    node('container-host') {
+    node('build-amd64') {
         dir('src') {
             deleteDir()
             checkout_repo.checkout_repo()
@@ -175,7 +175,7 @@ def check_every_all_sh_component_will_be_run() {
 def get_supported_windows_builds() {
     def is_c89 = null
     def vs_builds = []
-    node('container-host') {
+    node('build-amd64') {
         dir('src') {
             deleteDir()
             checkout_repo.checkout_repo()
