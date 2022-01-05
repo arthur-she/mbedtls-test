@@ -40,7 +40,7 @@ def gather_outcomes() {
     if (outcome_stashes.isEmpty()) {
         return
     }
-    node('build-amd64') {
+    node('docker-amd64-mbed-tls-focal-host') {
         dir('outcomes') {
             deleteDir()
             try {
