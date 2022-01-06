@@ -114,7 +114,7 @@ def docker_script(platform, entrypoint, entrypoint_arguments='') {
     def docker_image = get_docker_tag(platform)
     return """\
 docker run -u \$(id -u):\$(id -g) --rm --entrypoint $entrypoint \
-    -w /var/lib/build -v `pwd`/src:/var/lib/build \
+    -w /var/lib/build -v /data/shared/`echo ${env.EXECUTOR_NUMBER}`/src:/var/lib/build \
     --cap-add SYS_PTRACE $docker_repo:$docker_image $entrypoint_arguments
 """
 }
