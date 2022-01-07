@@ -122,7 +122,7 @@ docker run -u \$(id -u):\$(id -g) --rm --entrypoint $entrypoint \
 /* Get components of all.sh for a list of platforms*/
 def get_all_sh_components(platform_list) {
     node('docker-amd64-mbed-tls-focal-host') {
-        dir('${env.EXECUTOR_NUMBER}/src') {
+        dir("${env.EXECUTOR_NUMBER}/src") {
             deleteDir()
             checkout_repo.checkout_repo()
         }

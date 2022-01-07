@@ -62,7 +62,7 @@ def gen_docker_jobs_foreach(label, platforms, compilers, script) {
                     try {
                         deleteDir()
                         common.get_docker_image(platform)
-                        dir('${env.EXECUTOR_NUMBER}/src') {
+                        dir("${env.EXECUTOR_NUMBER}/src") {
                             checkout_repo.checkout_repo()
                             writeFile file: 'steps.sh', text: """\
 #!/bin/sh
@@ -79,7 +79,7 @@ ${shell_script}
                                     platform, "/var/lib/build/steps.sh"
                                 )
                             } finally {
-                                dir('${env.EXECUTOR_NUMBER}/src/tests/') {
+                                dir("${env.EXECUTOR_NUMBER}/src/tests/") {
                                     common.archive_zipped_log_files(job_name)
                                 }
                             }
@@ -211,7 +211,7 @@ echo >&2 'Note: "clang" will run /usr/bin/clang -Wno-error=c11-extensions'
                 if (use_docker) {
                     common.get_docker_image(platform)
                 }
-                dir('${env.EXECUTOR_NUMBER}/src') {
+                dir("${env.EXECUTOR_NUMBER}/src") {
                     checkout_repo.checkout_repo()
                     /* ARMLMD_LICENSE_FILE is supposed to be set in the
                      * Dockerfile, but the value there is out-of-date and we
@@ -237,15 +237,15 @@ ${extra_setup_code}
                                 platform, "/var/lib/build/steps.sh"
                             )
                         } else {
-                            dir('${env.EXECUTOR_NUMBER}/src') {
+                            dir("${env.EXECUTOR_NUMBER}/src") {
                                 sh './steps.sh'
                             }
                         }
                     } finally {
-                        dir('${env.EXECUTOR_NUMBER}/src') {
+                        dir("${env.EXECUTOR_NUMBER}/src") {
                             analysis.stash_outcomes(job_name)
                         }
-                        dir('${env.EXECUTOR_NUMBER}/src/tests/') {
+                        dir("${env.EXECUTOR_NUMBER}/src/tests/") {
                             common.archive_zipped_log_files(job_name)
                         }
                     }
@@ -328,7 +328,7 @@ def gen_abi_api_checking_job(platform) {
             try {
                 deleteDir()
                 common.get_docker_image(platform)
-                dir('${env.EXECUTOR_NUMBER}/src') {
+                dir("${env.EXECUTOR_NUMBER}/src") {
                     checkout_repo.checkout_repo()
                     /* The credentials here are the SSH credentials for accessing the repositories.
                        They are defined at {JENKINS_URL}/credentials */
@@ -370,7 +370,7 @@ def gen_code_coverage_job(platform) {
             try {
                 deleteDir()
                 common.get_docker_image(platform)
-                dir('${env.EXECUTOR_NUMBER}/src') {
+                dir("${env.EXECUTOR_NUMBER}/src") {
                     checkout_repo.checkout_repo()
                     writeFile file: 'steps.sh', text: '''#!/bin/sh
 set -eux
@@ -395,14 +395,14 @@ fi
                         sh common.docker_script(
                                 platform, "/var/lib/build/steps.sh"
                         )
-                        dir('${env.EXECUTOR_NUMBER}/src') {
+                        dir("${env.EXECUTOR_NUMBER}/src") {
                             String coverage_log = readFile('coverage-summary.txt')
                             coverage_details['coverage'] = coverage_log.substring(
                                 coverage_log.indexOf('\nCoverage\n') + 1
                             )
                         }
                     } finally {
-                        dir('${env.EXECUTOR_NUMBER}/src/tests/') {
+                        dir("${env.EXECUTOR_NUMBER}/src/tests/") {
                             common.archive_zipped_log_files(job_name)
                         }
                     }
