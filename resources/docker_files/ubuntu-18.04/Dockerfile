@@ -37,6 +37,11 @@ FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Can be overriden at build time
+ARG BUILDSLAVE_PASSWORD=buildslave
+
+COPY setup-sshd /usr/sbin/setup-sshd
+
 # Install necessary apt tools
 RUN apt-get update > /dev/null && \
     apt-get install -y apt-transport-https \
@@ -270,14 +275,38 @@ RUN locale-gen en_US.UTF-8
 RUN locale && locale-gen "en_US.UTF-8" && dpkg-reconfigure locales
 
 # Add user
-RUN useradd -m user
+#RUN useradd -m user
+
+RUN apt-get install -y -qq openssh-server
+RUN set -e ;\
+    # Setup buildslave user for Jenkins
+    useradd -m -s /bin/bash buildslave ;\
+    echo "buildslave:$BUILDSLAVE_PASSWORD" | chpasswd ;\
+    echo 'buildslave ALL = NOPASSWD: ALL' > /etc/sudoers.d/jenkins ;\
+    chmod 0440 /etc/sudoers.d/jenkins ;\
+    mkdir -p /var/run/sshd ;
+
 
 # Create workspace
-ARG AGENT_WORKDIR=/var/lib/builds
-RUN mkdir -p ${AGENT_WORKDIR} && chown user:user ${AGENT_WORKDIR}
-USER user
-ENV AGENT_WORKDIR=${AGENT_WORKDIR}
+#ARG AGENT_WORKDIR=/var/lib/builds
+#RUN mkdir -p ${AGENT_WORKDIR} && chown user:user ${AGENT_WORKDIR}
+#USER user
+#ENV AGENT_WORKDIR=${AGENT_WORKDIR}
+#
+#WORKDIR ${AGENT_WORKDIR}
+#
+#ENTRYPOINT ["bash"]
 
-WORKDIR ${AGENT_WORKDIR}
+USER buildslave
 
-ENTRYPOINT ["bash"]
+RUN set -e ;\
+    # Set git default config
+    git config --global user.email "ci@trustedfirmware.org" ;\
+    git config --global user.name "TF CI" ;\
+    git config --global color.ui "auto"
+
+USER root
+
+EXPOSE 22
+ENTRYPOINT ["/usr/sbin/setup-sshd"]
+

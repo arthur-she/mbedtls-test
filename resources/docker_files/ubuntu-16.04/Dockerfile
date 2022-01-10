@@ -28,6 +28,12 @@ FROM ubuntu:16.04
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /opt/src
 
+# Can be overriden at build time
+ARG BUILDSLAVE_PASSWORD=buildslave
+
+COPY setup-sshd /usr/sbin/setup-sshd
+
+
 # Support for i386:
 # - for 32-bit builds+tests of Mbed TLS
 # - required to install Arm Compiler 5.06 (armcc)
@@ -272,15 +278,37 @@ RUN locale && \
     dpkg-reconfigure locales
 
 # Add user
-RUN useradd -m user
+#RUN useradd -m user
+RUN apt-get update
+RUN apt-get install -y -qq openssh-server sudo
+RUN set -e ;\
+    # Setup buildslave user for Jenkins
+    useradd -m -s /bin/bash buildslave ;\
+    echo "buildslave:$BUILDSLAVE_PASSWORD" | chpasswd ;\
+    echo 'buildslave ALL = NOPASSWD: ALL' > /etc/sudoers.d/jenkins ;\
+    chmod 0440 /etc/sudoers.d/jenkins ;\
+    mkdir -p /var/run/sshd ;
 
 # Create workspace
-ARG AGENT_WORKDIR=/var/lib/builds
-RUN mkdir -p ${AGENT_WORKDIR} && chown user:user ${AGENT_WORKDIR}
-USER user
-ENV AGENT_WORKDIR=${AGENT_WORKDIR}
+#ARG AGENT_WORKDIR=/var/lib/builds
+#RUN mkdir -p ${AGENT_WORKDIR} && chown user:user ${AGENT_WORKDIR}
+#USER user
+#ENV AGENT_WORKDIR=${AGENT_WORKDIR}
+#
+#WORKDIR ${AGENT_WORKDIR}
+#
+#ENTRYPOINT ["bash"]
+USER buildslave
 
-WORKDIR ${AGENT_WORKDIR}
+RUN set -e ;\
+    # Set git default config
+    git config --global user.email "ci@trustedfirmware.org" ;\
+    git config --global user.name "TF CI" ;\
+    git config --global color.ui "auto"
 
-ENTRYPOINT ["bash"]
+USER root
+
+EXPOSE 22
+ENTRYPOINT ["/usr/sbin/setup-sshd"]
+
 
