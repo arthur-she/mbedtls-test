@@ -238,7 +238,7 @@ def maybe_notify_github(context, state, description) {
         description = description.take(MAX_DESCRIPTION_LENGTH - 1) + '…'
     }
 
-    content = is_open_ci_env ? "TF OpenCI: ${env.BRANCH_NAME} ${context}" : "Internal CI: ${env.JENKINS_URL} ${env.BRANCH_NAME} ${context}"
+    content = "Internal CI: ${env.BRANCH_NAME} ${context}"
     githubNotify context: content,
                  status: state,
                  description: description
