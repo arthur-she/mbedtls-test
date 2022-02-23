@@ -680,8 +680,29 @@ chmod 0600 ${env.HOME}/.docker/config.json
 """
                             }
                         } else {
+                            def base_image = platform.replaceFirst('-', ':')
                             sh """\
 aws ecr get-login-password | docker login --username AWS --password-stdin $common.docker_ecr
+
+# Pull cached base image
+# Ignore errors in case the cache doesn't exist yet
+! docker pull $common.docker_repo:$platform-base
+
+# Try pulling base image from Docker Hub
+# This will not consume our pull limit if the image is identical to the cached base image
+if docker pull $base_image; then
+    # Check if the base image differs from the cached image
+    if [ "\$(docker images --no-trunc --format '{{.ID}}' $base_image)" != \
+         "\$(docker images --no-trunc --format '{{.ID}}' $common.docker_repo:$platform-base)" ]
+    then
+        # Update the cached base image
+        docker tag $base_image $common.docker_repo:$platform-base
+        docker push $common.docker_repo:$platform-base
+    fi
+else
+    # Pull failed, try to use the cached base image
+    docker tag $common.docker_repo:$platform-base $base_image
+fi
 """
                         }
 
