@@ -32,7 +32,7 @@ import groovy.transform.Field
  * it into account for the on-target test jobs.
  */
 @Field perJobTimeout = [
-        time: 60,
+        time: 120,
         raasOffset: 17,
         windowsTestingOffset: 60,
         unit: 'MINUTES'
