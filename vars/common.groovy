@@ -148,7 +148,7 @@ docker run -u \$(id -u):\$(id -g) -e MAKEFLAGS --rm --entrypoint $entrypoint \
 def get_branch_information() {
     node('container-host') {
         dir('src') {
-            deleteDir()
+            //deleteDir()
             checkout_repo.checkout_repo()
 
             has_min_requirements = fileExists('scripts/min_requirements.py')

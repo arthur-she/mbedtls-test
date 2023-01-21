@@ -35,7 +35,7 @@ def gen_simple_windows_jobs(label, script) {
         node("windows") {
             try {
                 dir("src") {
-                    deleteDir()
+                    //deleteDir()
                     checkout_repo.checkout_repo()
                     timeout(time: common.perJobTimeout.time,
                             unit: common.perJobTimeout.unit) {
@@ -46,7 +46,7 @@ def gen_simple_windows_jobs(label, script) {
                 failed_builds[label] = true
                 throw (err)
             } finally {
-                deleteDir()
+                //deleteDir()
             }
         }
     }
@@ -63,7 +63,7 @@ def gen_docker_jobs_foreach(label, platforms, compilers, script) {
             jobs[job_name] = {
                 node('container-host') {
                     try {
-                        deleteDir()
+                        //deleteDir()
                         common.get_docker_image(platform)
                         dir('src') {
                             checkout_repo.checkout_repo()
@@ -91,7 +91,7 @@ ${shell_script}
                         failed_builds[job_name] = true
                         throw (err)
                     } finally {
-                        deleteDir()
+                        //deleteDir()
                     }
                 }
             }
@@ -110,7 +110,7 @@ def gen_node_jobs_foreach(label, platforms, compilers, script) {
             jobs[job_name] = {
                 node(platform) {
                     try {
-                        deleteDir()
+                        //deleteDir()
                         checkout_repo.checkout_repo()
                         shell_script = """\
 ulimit -f 20971520
@@ -124,7 +124,7 @@ export PYTHON=/usr/local/bin/python2.7
                         failed_builds[job_name] = true
                         throw (err)
                     } finally {
-                        deleteDir()
+                        //deleteDir()
                     }
                 }
             }
@@ -217,7 +217,7 @@ scripts/min_requirements.py --user
     jobs[job_name] = {
         node(node_label) {
             try {
-                deleteDir()
+                //deleteDir()
                 if (use_docker) {
                     common.get_docker_image(platform)
                 }
@@ -258,7 +258,7 @@ ${extra_setup_code}
                 failed_builds[job_name] = true
                 throw (err)
             } finally {
-                deleteDir()
+                //deleteDir()
             }
         }
     }
@@ -273,18 +273,18 @@ def gen_windows_testing_job(build, label_prefix='') {
         node("windows") {
             try {
                 dir("src") {
-                    deleteDir()
+                    //deleteDir()
                     checkout_repo.checkout_repo()
                 }
                 /* The empty files are created to re-create the directory after it
-                 * and its contents have been removed by deleteDir. */
+                 * and its contents have been removed by //deleteDir. */
                 dir("logs") {
-                    deleteDir()
+                    //deleteDir()
                     writeFile file:'_do_not_delete_this_directory.txt', text:''
                 }
 
                 dir("worktrees") {
-                    deleteDir()
+                    //deleteDir()
                     writeFile file:'_do_not_delete_this_directory.txt', text:''
                 }
 
@@ -310,7 +310,7 @@ def gen_windows_testing_job(build, label_prefix='') {
                 failed_builds[job_name] = true
                 throw (err)
             } finally {
-                deleteDir()
+                //deleteDir()
             }
         }
     }
@@ -342,7 +342,7 @@ def gen_abi_api_checking_job(platform) {
     jobs[job_name] = {
         node('container-host') {
             try {
-                deleteDir()
+                //deleteDir()
                 common.get_docker_image(platform)
                 dir('src') {
                     checkout_repo.checkout_repo()
@@ -375,7 +375,7 @@ scripts/abi_check.py -o FETCH_HEAD -n HEAD -s identifiers --brief
                 failed_builds[job_name] = true
                 throw (err)
             } finally {
-                deleteDir()
+                //deleteDir()
             }
         }
     }
@@ -389,7 +389,7 @@ def gen_code_coverage_job(platform) {
     jobs[job_name] = {
         node('container-host') {
             try {
-                deleteDir()
+                //deleteDir()
                 common.get_docker_image(platform)
                 dir('src') {
                     checkout_repo.checkout_repo()
@@ -437,7 +437,7 @@ fi
                 failed_builds[job_name] = true
                 throw (err)
             } finally {
-                deleteDir()
+                //deleteDir()
             }
         }
     }
@@ -474,7 +474,7 @@ def gen_mbed_os_example_job(repo, branch, example, compiler, platform, raas) {
     jobs[job_name] = {
         node(compiler) {
             try {
-                deleteDir()
+                //deleteDir()
 /* Create python virtual environment and install mbed tools */
                 sh """\
 ulimit -f 20971520
@@ -484,7 +484,7 @@ pip install mbed-cli
 pip install mbed-host-tests
 """
                 dir('mbed-os-example') {
-                    deleteDir()
+                    //deleteDir()
                     checkout_repo.checkout_mbed_os_example_repo(repo, branch)
                     dir(example) {
 /* If the job is targeting an example repo, then we wish to use the versions
@@ -510,7 +510,7 @@ mbed config root .
 mbed deploy -vv
 """
                             dir('mbed-os') {
-                                deleteDir()
+                                //deleteDir()
                                 checkout_repo.checkout_mbed_os()
 /* Check that python requirements are up to date */
                                 sh """\
@@ -564,7 +564,7 @@ mbedhtrun -m ${platform} ${tag_filter} \
                 failed_builds[job_name] = true
                 throw (err)
             } finally {
-                deleteDir()
+                //deleteDir()
             }
         }
     }
@@ -580,7 +580,7 @@ def gen_coverity_push_jobs() {
             node('container-host') {
                 try {
                     dir("src") {
-                        deleteDir()
+                        //deleteDir()
                         checkout_repo.checkout_repo()
                         sshagent([env.GIT_CREDENTIALS_ID]) {
                             sh 'git push origin HEAD:coverity_scan'
@@ -590,7 +590,7 @@ def gen_coverity_push_jobs() {
                     failed_builds[job_name]= true
                     throw (err)
                 } finally {
-                    deleteDir()
+                    //deleteDir()
                 }
             }
         }
@@ -657,7 +657,7 @@ def gen_dockerfile_builder_job(platform, overwrite=false) {
                 }
                 if (overwrite || !image_exists) {
                     dir('docker') {
-                        deleteDir()
+                        //deleteDir()
                         writeFile file: 'Dockerfile', text: dockerfile
                         def extra_build_args = ''
 
