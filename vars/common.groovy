@@ -149,6 +149,7 @@ def get_branch_information() {
     node('container-host') {
         dir('src') {
             //deleteDir()
+            sh 'pwd; ls -l; time rm -rf *'
             checkout_repo.checkout_repo()
 
             has_min_requirements = fileExists('scripts/min_requirements.py')
