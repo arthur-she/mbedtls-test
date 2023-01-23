@@ -279,21 +279,18 @@ def gen_windows_testing_job(build, label_prefix='') {
         node("windows") {
             try {
                 dir("src") {
-                    //deleteDir()
-                    sh 'pwd ; ls -l ; time rm -rf *'
+                    deleteDir()
                     checkout_repo.checkout_repo()
                 }
                 /* The empty files are created to re-create the directory after it
                  * and its contents have been removed by //deleteDir. */
                 dir("logs") {
-                    //deleteDir()
-                    sh 'pwd ; ls -l ; time rm -rf *'
+                    deleteDir()
                     writeFile file:'_do_not_delete_this_directory.txt', text:''
                 }
 
                 dir("worktrees") {
-                    //deleteDir()
-                    sh 'pwd ; ls -l ; time rm -rf *'
+                    deleteDir()
                     writeFile file:'_do_not_delete_this_directory.txt', text:''
                 }
 
@@ -319,8 +316,7 @@ def gen_windows_testing_job(build, label_prefix='') {
                 failed_builds[job_name] = true
                 throw (err)
             } finally {
-                //deleteDir()
-                sh 'pwd ; ls -l ; time rm -rf *'
+                deleteDir()
             }
         }
     }
