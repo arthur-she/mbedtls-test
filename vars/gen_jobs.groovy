@@ -30,6 +30,8 @@ import hudson.AbortException
 //Record coverage details for reporting
 @Field coverage_details = ['coverage': 'Code coverage job did not run']
 
+@Field static linux_node = 'container-host-A'
+
 private Map<String, Callable<Void>> job(String label, Callable<Void> body) {
     return Collections.singletonMap(label, body)
 }
@@ -62,9 +64,21 @@ Map<String, Callable<Void>> gen_simple_windows_jobs(String label, String script)
     }
 }
 
+def get_linux_node() {
+    build_node = linux_node
+    if (linux_node == 'container-host-A') {
+        linux_node = 'container-host-B'
+    } else if (linux_node == 'container-host-B') {
+        linux_node = 'container-host-C'
+    } else {
+        linux_node = 'container-host-A'
+    }
+    return build_node
+}
+    
 def node_label_for_platform(platform) {
     switch (platform) {
-    case ~/^(debian|ubuntu)(-.*)?/: return 'container-host';
+    case ~/^(debian|ubuntu)(-.*)?/: return get_linux_node();
     case 'arm-compilers': return 'container-host';
     case ~/^freebsd(-.*)?/: return 'freebsd';
     case ~/^windows(-.*)?/: return 'windows';
