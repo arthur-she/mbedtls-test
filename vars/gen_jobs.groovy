@@ -70,6 +70,8 @@ def get_linux_node() {
         linux_node = 'container-host-B'
     } else if (linux_node == 'container-host-B') {
         linux_node = 'container-host-C'
+    } else if (linux_node == 'container-host-C') {
+        linux_node = 'container-host-D'
     } else {
         linux_node = 'container-host-A'
     }
